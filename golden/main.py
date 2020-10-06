@@ -120,11 +120,11 @@ def profile():
 ##########ติด EERRRRORORORO
 @app.route('/pythonlogin/edit')
 def edit():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM accounts")
-    data = cur.fetchall()
-    cur.close()
-    return redirect(url_for('edit',data=accounts))
+    cur = mysql.connect.cursor()
+    resultValue = cur.execute("SELECT * FROM accounts")
+    if resultValue > 0:
+        userDetails = cur.fetchall()
+        return render_template('edit.html',userDetails=userDetails)
 
 
 if __name__ == '__main__':

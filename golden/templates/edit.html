@@ -4,11 +4,11 @@
 
 {% block content %}
 <h2>Edit Page</h2>
-{% for row in accounts %}
+{% for accounts in userDetails %}
 <tr>
-    <td>{{row.0}}</td>
-    <td>{{row.1}}</td>
-    <td>{{row.2}}</td>
+    <td>{{accounts[0]}}</td>
+    <td>{{accounts[1]}}</td>
+    <td>{{accounts[2]}}</td>
 </tr>
 {% endfor %}
 {% endblock %}
