@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+from mysql.connector import Error
 import MySQLdb.cursors
+import mysql.connector
 import re
 
 app = Flask(__name__)
@@ -115,6 +117,14 @@ def profile():
         return render_template('profile.html', account=account)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
+##########ติด EERRRRORORORO
+@app.route('/pythonlogin/edit')
+def edit():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM accounts")
+    data = cur.fetchall()
+    cur.close()
+    return redirect(url_for('edit',data=accounts))
 
 
 if __name__ == '__main__':

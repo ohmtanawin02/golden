@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit{% endblock %}
+
+{% block content %}
+<h2>Edit Page</h2>
+{% for row in accounts %}
+<tr>
+    <td>{{row.0}}</td>
+    <td>{{row.1}}</td>
+    <td>{{row.2}}</td>
+</tr>
+{% endfor %}
+{% endblock %}
