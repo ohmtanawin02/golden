@@ -1,0 +1,48 @@
+<html>
+{% extends 'layout.html' %}
+
+{% block title %}Edit{% endblock %}
+
+{% block content %}
+
+<head>
+    <title>edit profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="=container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ลำดับที่</th>
+                    <th>ชื่อ</th>
+                    <th>นามสกุล</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{row.0}}</td>
+                    <td>{{row.1}}</td>
+                    <td>{{row.2}}</td>
+                    <td>{{row.3}}</td>
+                    <td>
+                        <a href="{{ url_for('adduser') }}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="">Edit</a>
+                        <a href="" class="btn btn-danger btn-xs"
+                            onclick="return confirm('คุณต้องการลบข้อมูลหรือไม่?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <center><a href="{{ url_for('adduser') }}" class="btn btn-primary">เพิ่มรายชื่อใหม่</a></center>
+    </div>
+</body>
+{% endblock %}
+
+</html>

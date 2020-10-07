@@ -4,9 +4,9 @@ from mysql.connector import Error
 import MySQLdb.cursors
 import mysql.connector
 import re
+import pymysql
 
 app = Flask(__name__)
-
 mysql = MySQL(app)
 
 app.secret_key = 'mysecret'
@@ -47,7 +47,7 @@ def login():
     return render_template('index.html', msg=msg)
 
 
-@app.route('/pythonlogin/logout')
+@app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
     session.pop('loggedin', None)
@@ -57,11 +57,9 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/pythonlogin/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Output message if something goes wrong...
     msg = ''
-    # Check if "username", "password" and "email" POST requests exist (user submitted form)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
         # Create variables for easy access
         username = request.form['username']
@@ -84,7 +82,7 @@ def register():
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
             cursor.execute(
-                'INSERT INTO accounts VALUES (NULL, %s, %s, %s)', (username, password, email,))
+                'INSERT INTO accounts VALUES (NOT NULL, %s, %s, %s)', (username, password, email,))
             mysql.connection.commit()
             msg = 'You have successfully registered!'
     elif request.method == 'POST':
@@ -94,7 +92,7 @@ def register():
     return render_template('register.html', msg=msg)
 
 
-@app.route('/pythonlogin/home')
+@app.route('/home')
 def home():
     # Check if user is loggedin
     if 'loggedin' in session:
@@ -104,7 +102,7 @@ def home():
     return redirect(url_for('login'))
 
 
-@app.route('/pythonlogin/profile')
+@app.route('/profile')
 def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
@@ -117,14 +115,85 @@ def profile():
         return render_template('profile.html', account=account)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
-##########ติด EERRRRORORORO
-@app.route('/pythonlogin/edit')
-def edit():
+# ติด EERRRRORORORO
+
+
+@app.route('/show')
+def show():
     cur = mysql.connect.cursor()
-    resultValue = cur.execute("SELECT * FROM accounts")
-    if resultValue > 0:
-        userDetails = cur.fetchall()
-        return render_template('edit.html',userDetails=userDetails)
+    cur.execute("select * from accounts")
+    rows = cur.fetchall()
+    return render_template('show.html', data=rows)
+    ##cur = mysql.connect.cursor()
+    # if resultValue > 0:
+    #userDetails = cur.fetchall()
+    # return render_template('edit.html', userDetails=userDetails)
+
+
+@app.route('/adduser')
+def adduser():
+    cur = mysql.connect.cursor()
+    cur.execute("select * from accounts")
+    rows = cur.fetchall()
+    return render_template("adduser.html")
+
+
+@app.route('/insert', methods=['POST'])
+def insert():
+    if request.method == "POST" and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        msg = ''
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        # Check if account exists using MySQL
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(
+            'SELECT * FROM accounts WHERE username = %s', (username,))
+        account = cursor.fetchone()
+        # If account exists show error and validation checks
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            cursor.execute(
+                "INSERT INTO accounts (username, password, email) VALUES ( % s, % s, % s)",(username, password, email))
+            mysql.connect.commit()
+            (username, password, email)
+            msg = 'You have successfully insert'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form!'
+    return render_template('adduser.html',msg=msg)
+        #msg = ''
+        # if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        # Create variables for easy access
+        #username = request.form['username']
+        #password = request.form['password']
+        #email = request.form['email']
+        # Check if account exists using MySQL
+        #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cursor.execute(
+        #    'SELECT * FROM accounts WHERE username = %s', (username,))
+        #accounts = cursor.fetchone()
+        # If account exists show error and validation checks
+        # if accounts:
+        #    msg = 'Account already exists!'
+        # elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+        #    msg = 'Invalid email address!'
+        # elif not re.match(r'[A-Za-z0-9]+', username):
+        #    msg = 'Username must contain only characters and numbers!'
+        # elif not username or not password or not email:
+        #    msg = 'Please fill out the form!'
+        # else:
+        # Account doesnt exists and the form data is valid, now insert new account into accounts table
+        #    cursor.execute(
+        #        'INSERT INTO accounts VALUES (NOT NULL, %s, %s, %s)', (username, password, email,))
+        #    mysql.connection.commit()
+        #msg = 'You have successfully to insert'
 
 
 if __name__ == '__main__':
